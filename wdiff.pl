@@ -3,6 +3,7 @@
 # Script to add word-based colors to `diff -u` output.
 # Use: `diff -u a b | wdiff.pl` or `wdiff.pl < patch.txt`.
 
+
 use strict;
 use warnings;
 use Carp;
