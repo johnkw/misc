@@ -125,7 +125,7 @@ sub diff($$$) {
                     splice(@diffs, $i, 1);
                     dbg(\@diffs);
                     last;
-                } elsif (($i > 1) && ($diffs[$i-1][0] eq $diffs[$i+1][0] && ($diffs[$i-2][0]) =~ /a|d/)) {
+                } elsif (($i > 1) && ($diffs[$i-1][0] eq $diffs[$i+1][0] && ($diffs[$i-2][0]) =~ /a|d/) && ($diffs[$i-1][0] ne $diffs[$i-2][0] )) {
                     $diffs[$i-2][1] .= $diffs[$i][1];
                     $diffs[$i-1][1] .= $diffs[$i][1];
                     splice(@diffs, $i, 1);
@@ -187,7 +187,7 @@ sub main() {
 
     sub showdiffs($$) {
         if ($_[0] || $_[1]) {
-            diff($_[1], $_[0], ['|\n \t\"\';\$\%', ',<>\@_:\.\[\]()\'\\\/!{}']);
+            diff($_[1], $_[0], ['|\n\r \t\"\';\$\%', ',<>\@_:\.\[\]()\'\\\/!{}']);
         }
     }
 
