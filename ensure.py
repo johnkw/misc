@@ -16,6 +16,8 @@ def choice(prompt, allowed, default=None):
 any_failures = False
 def error(*msg):
     global any_failures
+    if len(msg) == 1:
+        msg = msg[0]
     print('\nERROR:',*msg)
     sys.stderr.write('ERROR: '+repr(msg)+'\n')
     any_failures = True
@@ -23,6 +25,7 @@ def error(*msg):
 def check(test, *msg):
     if not test:
         error(inspect.currentframe().f_back.f_lineno, *msg)
+    return test
 
 def ensure(test, *msg):
     if not test:
