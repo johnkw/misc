@@ -14,21 +14,22 @@ def choice(prompt, allowed, default=None):
     raise
 
 any_failures = False
-def error(*msg):
+def error(*msg, frames_back=1):
     global any_failures
-    if len(msg) == 1:
-        msg = msg[0]
+    back = inspect.currentframe()
+    for i in range(frames_back):
+        back = back.f_back
+    msg = [back.f_code.co_filename.rsplit('/')[-1]+':'+str(back.f_lineno)] + list(msg)
     print('\nERROR:',*msg)
-    sys.stderr.write('ERROR: '+repr(msg)+'\n')
+    sys.stderr.write('ERROR: '+' '.join(repr(i) for i in msg)+'\n')
     any_failures = True
 
 def check(test, *msg):
     if not test:
-        error(inspect.currentframe().f_back.f_lineno, *msg)
+        error(*msg, frames_back=2)
     return test
 
 def ensure(test, *msg):
     if not test:
-        back = inspect.currentframe().f_back
-        error(back.f_code.co_filename+':'+str(back.f_lineno), *msg)
+        error(*msg, frames_back=2)
         choice('Continue despite above error? ', ['continue'])
