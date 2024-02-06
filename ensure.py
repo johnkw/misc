@@ -21,7 +21,7 @@ def error(*msg, frames_back=1):
         back = back.f_back
     msg = [back.f_code.co_filename.rsplit('/')[-1]+':'+str(back.f_lineno)] + list(msg)
     print('\nERROR:',*msg)
-    sys.stderr.write('ERROR: '+' '.join(repr(i) for i in msg)+'\n')
+    sys.stderr.write('ERROR: '+' '.join(str(i) for i in msg)+'\n')
     any_failures = True
 
 def check(test, *msg):
@@ -33,3 +33,4 @@ def ensure(test, *msg):
     if not test:
         error(*msg, frames_back=2)
         choice('Continue despite above error? ', ['continue'])
+    return test
