@@ -34,3 +34,13 @@ def ensure(test, *msg, frames_back=2):
         error(*msg, frames_back=frames_back)
         choice('Continue despite above error? ', ['continue'])
     return test
+
+class isused_dict(dict):
+    __slots__ = ['__used']
+    def __init__(self, init):
+        dict.__init__(self, init)
+        self.__used = set()
+    def __getitem__(self, i):
+        self.__used.add(i)
+        return dict.__getitem__(self, i)
+    def unused(self): return self.__used ^ set(self.keys())
