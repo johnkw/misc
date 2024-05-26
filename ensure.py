@@ -43,4 +43,7 @@ class isused_dict(dict):
     def __getitem__(self, i):
         self.__used.add(i)
         return dict.__getitem__(self, i)
+    def __setitem__(self, i, n):
+        self.__used.add(i)
+        return dict.__setitem__(self, i, n)
     def unused(self): return self.__used ^ set(self.keys())
