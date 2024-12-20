@@ -21,7 +21,8 @@ def error(*msg, frames_back=1):
         back = back.f_back
     msg = [back.f_code.co_filename.rsplit('/')[-1]+':'+str(back.f_lineno)] + list(msg)
     print('\nERROR:',*msg)
-    sys.stderr.write('ERROR: '+' '.join(str(i) for i in msg)+'\n')
+    if not sys.stdout.isatty() or not sys.stderr.isatty():
+        sys.stderr.write('ERROR: '+' '.join(str(i) for i in msg)+'\n')
     error_count += 1
 
 def check(test, *msg, frames_back=2):
