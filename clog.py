@@ -16,6 +16,7 @@ def debug  (msg,*args,**kwargs): logging.root.debug  (msg,*args,**kwargs)
 def info   (msg,*args,**kwargs): logging.root.info   (msg,*args,**kwargs)
 def warning(msg,*args,**kwargs): logging.root.warning('WARNING: '+msg,*args,**kwargs)
 def error  (msg,*args,**kwargs): logging.root.error  ('\007ERROR: '+msg,*args,**kwargs)
+def exception(msg,*args,**kwargs): logging.root.exception('\007ERROR: '+msg,*args,**kwargs)
 
 def watch(msg):
     if stdout.level == logging.INFO:
