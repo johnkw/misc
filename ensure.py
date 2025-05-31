@@ -47,4 +47,7 @@ class isused_dict(dict):
     def __setitem__(self, i, n):
         self.__used.add(i)
         return dict.__setitem__(self, i, n)
+    def pop(self, i):
+        self.__used.remove(i)
+        return dict.pop(self, i)
     def unused(self): return self.__used ^ set(self.keys())
