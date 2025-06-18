@@ -38,7 +38,7 @@ class tmp(types.ModuleType):
         options.append(('--quiet',{'action':'store_true'}))
 
         self.vars_args = self.subparse(None, *options)
-        if self.vars_args['debug'] or self.vars_args['quiet']:
+        if (self.vars_args['debug'] > 0) or self.vars_args['quiet']:
             import clog
             clog.stdout.setLevel(
                 clog.logging.ERROR if self.vars_args['quiet']
