@@ -7,7 +7,8 @@ def add_handler(level, handler, show_pid=False):
     return handler
 
 stdout = add_handler(logging.INFO, logging.StreamHandler(sys.stdout))
-stderr = add_handler(logging.ERROR, logging.StreamHandler(sys.stderr))
+if not(sys.stdout.isatty() and sys.stderr.isatty()):
+    stderr = add_handler(logging.ERROR, logging.StreamHandler(sys.stderr))
 logging.root.setLevel(0) # the "logger" logs everything, but the handlers are more choosy
 
 def log(lev,msg,*args,**kwargs): logging.root.log    (lev,msg,*args,**kwargs)
