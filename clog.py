@@ -1,4 +1,4 @@
-import logging, sys
+import logging, reprlib, sys
 
 def add_handler(level, handler, show_pid=False):
     handler.setFormatter(logging.Formatter('%(asctime)s '+('%(process)d ' if show_pid else '')+'%(message)s', '%Y-%m-%d %H:%M:%S'))
@@ -22,3 +22,16 @@ def exception(msg,*args,**kwargs): logging.root.exception('\007ERROR: '+msg,*arg
 def watch(msg):
     if stdout.level == logging.INFO:
         print(msg,end='')
+
+_builtin_repr = repr
+def repr(input_obj):
+    class ReprGood(reprlib.Repr):
+        def __init__(self):
+            reprlib.Repr.__init__(self)
+            self.maxlist=99
+            self.maxdict=99
+            self.indent=1
+        def repr_list(self,obj,level):
+            return _builtin_repr(obj) if not any(isinstance(i,(list,dict,tuple)) for i in obj) else reprlib.Repr.repr_list(self,obj,level)
+    tmp = ReprGood()
+    return tmp.repr(input_obj)
