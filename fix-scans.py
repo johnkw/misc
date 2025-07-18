@@ -11,10 +11,10 @@ scans = sorted((os.path.getmtime(i),i) for i in os.listdir() if i.startswith('Sc
 for i in scans:
     if not os.path.exists('trimmed-'+i[1]):
         clog.debug('trimming '+i[1])
-        subprocess.check_call(['magick','-gravity','center',i[1],'-shave','20x20','-set','option:color','%[pixel:u.p{-1,1}]','-background','%[color]','+deskew','-despeckle','-fuzz','11%','-trim','-flatten','trimmed-'+i[1]])
+        subprocess.check_call(['magick','-gravity','center',i[1],'-shave','20x20','-set','option:color','%[pixel:u.p{-1,1}]','-background','%[color]','+deskew','-despeckle','-fuzz','18%','-trim','+repage','-flatten','trimmed-'+i[1]])
 
 subprocess.check_call(
-    ['magick','-gravity','center']+
+    ['magick','-gravity','center','-background','white']+
     functools.reduce(
         lambda a,b:a+['(','-size','60x60','xc:Transparent',')']+b,
         (['(','trimmed-'+file[1]]+(['-rotate','180'] if num+1 in flips else [])+[')'] for num,file in enumerate(scans))
