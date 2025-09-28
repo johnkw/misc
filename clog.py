@@ -10,6 +10,7 @@ stdout = add_handler(logging.INFO, logging.StreamHandler(sys.stdout))
 if not(sys.stdout.isatty() and sys.stderr.isatty()):
     stderr = add_handler(logging.ERROR, logging.StreamHandler(sys.stderr))
 logging.root.setLevel(0) # the "logger" logs everything, but the handlers are more choosy
+logging.raiseExceptions = False # Without this, the logging module goes crazy if we use `tail` or `head` etc.
 
 def log(lev,msg,*args,**kwargs): logging.root.log    (lev,msg,*args,**kwargs)
 def trace  (msg,*args,**kwargs): logging.root.log    (logging.DEBUG-1,msg,*args,**kwargs)
