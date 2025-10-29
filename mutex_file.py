@@ -16,18 +16,18 @@ class MutexFile():
         try:
             fcntl.flock(self.__lock_file_handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            lock_data = self.__lock_file_handle.read()
+            lock_data = self.__lock_file_handle.read().strip()
             try:
                 p = psutil.Process(int(lock_data))
                 lock_data += ' '+repr(p.cmdline())+' '+str(datetime.datetime.fromtimestamp(p.create_time()))[:19]+' '+p.status()
             except Exception as e:
                 lock_data += ' error '+str(e)
-            clog.info('waiting for lock: '+lock_data)
+            clog.info('waiting for lock: '+self.__lock_file_name+' '+lock_data)
             self.__lock_file_handle = None
         else:
             self.__lock_file_handle.seek(os.SEEK_SET, 0)
             self.__lock_file_handle.truncate(0)
-            self.__lock_file_handle.write(str(os.getpid()))
+            self.__lock_file_handle.write(str(os.getpid())+'\n')
             self.__lock_file_handle.flush()
         return self.is_locked()
 
@@ -40,4 +40,9 @@ def wait_for_global_lock(filename):
     if __global_lock:
         raise NotImplementedError
     __global_lock = MutexFile(filename)
-    while not __global_lock.attempt_lock(): time.sleep(1)
+    had_to_wait = False
+    while not __global_lock.attempt_lock():
+        time.sleep(1)
+        had_to_wait = True
+    if had_to_wait:
+        clog.info('got lock for '+filename)
