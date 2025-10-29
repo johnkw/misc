@@ -1,4 +1,4 @@
-import argparse, sys, types
+import argparse, clog, sys, types
 
 class tmp(types.ModuleType):
     def __getitem__(self, name): return self.vars_args[name]
@@ -34,15 +34,17 @@ class tmp(types.ModuleType):
                 assert arg[1]['type'] == int
                 break
         else:
-            options.append(('--debug',{'type':int,'default':0}))
+            options.append(('--debug',{'type':int,'default':0,'metavar':'num'}))
         options.append(('--quiet',{'action':'store_true'}))
+        options.append(('--logstdout',{'choices':clog.logging.getLevelNamesMapping().keys(),'metavar':'level-name'}))
 
         self.vars_args = self.subparse(None, *options)
-        if (self.vars_args['debug'] > 0) or self.vars_args['quiet']:
-            import clog
-            clog.stdout.setLevel(
-                clog.logging.ERROR if self.vars_args['quiet']
-                else (clog.logging.NOTSET if self.vars_args['debug'] > 1 else clog.logging.DEBUG)
-            )
+        if not self.vars_args['logstdout']:
+            if self.vars_args['debug'] > 0:
+                self.vars_args['logstdout'] = 'NOTSET' if self.vars_args['debug'] > 1 else 'DEBUG'
+            if self.vars_args['quiet']:
+                self.vars_args['logstdout'] = 'ERROR'
+        if self.vars_args['logstdout']:
+            clog.stdout.setLevel(clog.logging.getLevelNamesMapping()[self.vars_args['logstdout']])
 
 sys.modules[__name__] = tmp('')
