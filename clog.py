@@ -12,13 +12,13 @@ if not(sys.stdout.isatty() and sys.stderr.isatty()):
 logging.root.setLevel(0) # the "logger" logs everything, but the handlers are more choosy
 logging.raiseExceptions = False # Without this, the logging module goes crazy if we use `tail` or `head` etc.
 
-def log(lev,msg,*args,**kwargs): logging.root.log    (lev,msg,*args,**kwargs)
-def trace  (msg,*args,**kwargs): logging.root.log    (logging.DEBUG-1,msg,*args,**kwargs)
-def debug  (msg,*args,**kwargs): logging.root.debug  (msg,*args,**kwargs)
-def info   (msg,*args,**kwargs): logging.root.info   (msg,*args,**kwargs)
-def warning(msg,*args,**kwargs): logging.root.warning('WARNING: '+msg,*args,**kwargs)
-def error  (msg,*args,**kwargs): logging.root.error  ('\007ERROR: '+msg,*args,**kwargs)
-def exception(msg,*args,**kwargs): logging.root.exception('\007ERROR: '+msg,*args,**kwargs)
+def log(lev,msg): logging.root.log    (lev,msg)
+def trace  (msg): logging.root.log    (logging.DEBUG-1,msg)
+def debug  (msg): logging.root.debug  (msg)
+def info   (msg): logging.root.info   (msg)
+def warning(msg): logging.root.warning('WARNING: '+msg)
+def error  (msg): logging.root.error  ('\007ERROR: '+msg)
+def exception(msg,*args,**kwargs): logging.root.exception('\007ERROR: '+msg, *args,**kwargs)
 
 def watch(msg):
     if stdout.level == logging.INFO:
