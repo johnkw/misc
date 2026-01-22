@@ -6,6 +6,10 @@ def add_handler(level, handler, show_pid=False):
     logging.root.addHandler(handler)
     return handler
 
+def add_rotating_log(codename, filename, maxBytes=100_000, backupCount=2):
+    logging.getLogger(codename).addHandler(logging.handlers.RotatingFileHandler(filename, maxBytes=maxBytes, backupCount=backupCount))
+    logging.getLogger(codename).handlers[0].setFormatter(logging.Formatter('%(asctime)s %(message)s', '%Y-%m-%d %H:%M:%S'))
+
 stdout = add_handler(logging.INFO, logging.StreamHandler(sys.stdout))
 if not(sys.stdout.isatty() and sys.stderr.isatty()):
     stderr = add_handler(logging.ERROR, logging.StreamHandler(sys.stderr))
