@@ -3,12 +3,14 @@ import inspect, sys
 def choice(prompt, allowed, default=None):
     for i in range(10):
         try: ret = input('\007'+prompt+' ('+', '.join(allowed)+'): ')
-        except EOFError:
+        except EOFError: ret = None
+        if ret == None:
             if default != None:
                 assert default in allowed
                 ret = default
                 print('[default: '+repr(default)+']')
-            else: raise
+            else:
+                raise Exception('no input and no default')
         if ret in allowed:
             return ret
     raise
