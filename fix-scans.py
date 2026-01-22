@@ -6,6 +6,8 @@ cmdargs.parse(('--color',{'choices':['color','gray','bw'],'default':'gray'}),('-
 flips = [int(i) for i in cmdargs['flips'].split(',')] if cmdargs['flips'] else []
 os.chdir(os.path.expanduser('~/.tmp/scans'))
 scans = sorted((os.path.getmtime(i),i) for i in os.listdir() if i.startswith('Scan') and i.endswith('.png'))
+assert len(flips) == len(set(flips))
+assert all(1 <= i <= len(scans) for i in flips)
 
 # This part is quite slow, so only do it once in case we want to change some other option after seeing the output.
 for i in scans:
