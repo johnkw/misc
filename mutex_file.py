@@ -31,18 +31,18 @@ class MutexFile():
             self.__lock_file_handle.flush()
         return self.is_locked()
 
+    def wait_for_lock(self):
+        had_to_wait = False
+        while not self.attempt_lock():
+            time.sleep(1)
+            had_to_wait = True
+        if had_to_wait:
+            clog.info('got lock for '+self.__lock_file_name)
+
     def is_locked(self):
         return self.__lock_file_handle != None
 
-__global_lock = None
-def wait_for_global_lock(filename):
-    global __global_lock
-    if __global_lock:
-        raise NotImplementedError
-    __global_lock = MutexFile(filename)
-    had_to_wait = False
-    while not __global_lock.attempt_lock():
-        time.sleep(1)
-        had_to_wait = True
-    if had_to_wait:
-        clog.info('got lock for '+filename)
+def create_and_wait_for_lock(filename):
+    lock = MutexFile(filename)
+    lock.wait_for_lock()
+    return lock
