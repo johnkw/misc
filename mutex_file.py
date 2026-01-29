@@ -39,6 +39,11 @@ class MutexFile():
         if had_to_wait:
             clog.info('got lock for '+self.__lock_file_name)
 
+    def __enter__(self):
+        self.wait_for_lock()
+        return self
+    def __exit__(*args): pass
+
     def is_locked(self):
         return self.__lock_file_handle != None
 
