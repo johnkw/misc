@@ -26,6 +26,9 @@ def exception(msg,*args,**kwargs): logging.root.exception('\007ERROR: '+msg, *ar
 
 def watch(msg):
     if stdout.level == logging.INFO:
+        if len(msg) > 1 and '\n' not in msg:
+            import datetime
+            msg = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S ')+msg
         print(msg,end='')
 
 _builtin_repr = repr
