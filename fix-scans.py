@@ -1,8 +1,14 @@
-#!/bin/python -ttu
+#!/bin/python -ubb
 
 import cmdargs, clog, datetime, functools, os, subprocess
 
-cmdargs.parse(('--color',{'choices':['color','gray','bw'],'default':'gray'}),('--flips'),('--quality',{'type':int,'default':15}),('--type',{'default':'avif'}))
+cmdargs.parse(
+    ('--color',{'choices':['color','gray','bw'],'default':'gray'}),
+    ('--flips'),
+    ('--quality',{'type':int,'default':15}),
+    ('--brightness-contrast',{'default':'0x30'}),
+    ('--type',{'default':'avif'})
+)
 flips = [int(i) for i in cmdargs['flips'].split(',')] if cmdargs['flips'] else []
 os.chdir(os.path.expanduser('~/.tmp/scans'))
 scans = sorted((os.path.getmtime(i),i) for i in os.listdir() if i.startswith('Scan') and i.endswith('.png'))
@@ -23,5 +29,5 @@ subprocess.check_call(
     )+
     ['-append','+repage','-strip','-flatten','-resize','2000x','-type','optimize']+
     (['-colorspace','gray'] if cmdargs['color'] in ('gray','bw') else [])+
-    (['-type','grayscale','-threshold','80%','-depth','1','-define','webp:lossless=true'] if cmdargs['color'] == 'bw' else ['-quality',str(cmdargs['quality']),'-brightness-contrast','0x30'])+
+    (['-type','grayscale','-threshold','80%','-depth','1','-define','webp:lossless=true'] if cmdargs['color'] == 'bw' else ['-quality',str(cmdargs['quality']),'-brightness-contrast',cmdargs['brightness-contrast']])+
     [datetime.datetime.fromtimestamp(scans[-1][0]).strftime('%Y-%m-%d_%H_%M_%S.'+cmdargs['type'])])
