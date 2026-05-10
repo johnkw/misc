@@ -1,4 +1,4 @@
-import inspect, sys
+import clog, inspect
 
 def choice(prompt, allowed, default=None):
     for i in range(10):
@@ -22,9 +22,7 @@ def error(*msg, frames_back=1):
     for i in range(frames_back):
         back = back.f_back
     msg = [back.f_code.co_filename.rsplit('/')[-1]+':'+str(back.f_lineno)] + list(msg)
-    print('\nERROR:',*msg)
-    if not sys.stdout.isatty() or not sys.stderr.isatty():
-        sys.stderr.write('ERROR: '+' '.join(str(i) for i in msg)+'\n')
+    clog.error(' '.join(str(i) for i in msg))
     error_count += 1
 
 def check(test, *msg, frames_back=2):
