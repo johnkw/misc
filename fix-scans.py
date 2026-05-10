@@ -9,7 +9,7 @@ cmdargs.parse(
     ('--brightness-contrast',{'default':'0x30'}),
     ('--type',{'default':'avif'})
 )
-flips = [int(i) for i in cmdargs['flips'].split(',')] if cmdargs['flips'] else []
+flips = {int(j[0]):('180' if len(j) == 1 else j[1])  for i in cmdargs['flips'].split(',') if (j := i.split('='))} if cmdargs['flips'] else {}
 os.chdir(os.path.expanduser('~/.tmp/scans'))
 scans = sorted((os.path.getmtime(i),i) for i in os.listdir() if i.startswith('Scan') and i.endswith('.png'))
 assert len(flips) == len(set(flips))
@@ -25,7 +25,7 @@ subprocess.check_call(
     ['magick','-gravity','center','-background','white']+
     functools.reduce(
         lambda a,b:a+['(','-size','60x60','xc:Transparent',')']+b,
-        (['(','trimmed-'+file[1]]+(['-rotate','180'] if num+1 in flips else [])+[')'] for num,file in enumerate(scans))
+        (['(','trimmed-'+file[1]]+(['-rotate',flips[num+1]] if num+1 in flips else [])+[')'] for num,file in enumerate(scans))
     )+
     ['-append','+repage','-strip','-flatten','-resize','2000x','-type','optimize']+
     (['-colorspace','gray'] if cmdargs['color'] in ('gray','bw') else [])+
