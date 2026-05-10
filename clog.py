@@ -1,7 +1,7 @@
 import logging, reprlib, sys
 
-def add_handler(level, handler, show_pid=False):
-    handler.setFormatter(logging.Formatter('%(asctime)s '+('%(process)d ' if show_pid else '')+'%(message)s', '%Y-%m-%d %H:%M:%S'))
+def add_handler(level, handler, show_pid=False, show_thread=False):
+    handler.setFormatter(logging.Formatter('%(asctime)s '+('%(process)d ' if show_pid else '')+('%(threadName)s ' if show_thread else '')+'%(message)s', '%Y-%m-%d %H:%M:%S'))
     handler.setLevel(level)
     logging.root.addHandler(handler)
     return handler
