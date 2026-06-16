@@ -1,4 +1,4 @@
-import logging, reprlib, sys
+import logging, reprlib, sys, time
 
 def add_handler(level, handler, show_pid=False, show_thread=False):
     handler.setFormatter(logging.Formatter('%(asctime)s '+('%(process)d ' if show_pid else '')+('%(threadName)s ' if show_thread else '')+'%(message)s', '%Y-%m-%d %H:%M:%S'))
@@ -25,7 +25,11 @@ def trace  (msg): logging.root.log    (logging.DEBUG-1,msg)
 def debug  (msg): logging.root.debug  (msg)
 def info   (msg): logging.root.info   (msg)
 def warning(msg): logging.root.warning('WARNING: '+msg)
-def error  (msg): logging.root.error  ('\007ERROR: '+msg)
+g_last_error_time = 0
+def error  (msg):
+    global g_last_error_time
+    logging.root.error  (('\007' if (time.time()-g_last_error_time)>.3 else '')+'ERROR: '+msg)
+    g_last_error_time = time.time()
 def exception(msg,*args,**kwargs): logging.root.exception('\007ERROR: '+msg, *args,**kwargs)
 
 def watch(msg):
