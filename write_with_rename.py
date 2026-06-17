@@ -47,6 +47,6 @@ class WriteCSV(WriteWithRename):
         csvwriter.writeheader()
         return csvwriter
 
-def write(filename, data, logging=True):
-    with WriteWithRename(filename, binary=bool(isinstance(data,bytes)), logging=logging) as f:
+def write(filename, data, /, logging=True, compress=False):
+    with WriteWithRename(filename, binary=bool(isinstance(data,bytes)), logging=logging, compress=compress) as f:
         f.write(data)
