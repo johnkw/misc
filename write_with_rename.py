@@ -1,4 +1,4 @@
-import io, lzma, os, tempfile, time
+import csv, io, lzma, os, tempfile, time
 
 class WriteWithRename(object):
     __slots__ = ['filename', 'logging', 'binary', 'compress', 'tf']
@@ -50,3 +50,9 @@ class WriteCSV(WriteWithRename):
 def write(filename, data, /, logging=True, compress=False):
     with WriteWithRename(filename, binary=bool(isinstance(data,bytes)), logging=logging, compress=compress) as f:
         f.write(data)
+
+def change_csv(filepath, callback, /, compress=False, dialect=csv.excel_tab, callback_args=[], callback_vargs={}):
+    reader = csv.DictReader((lzma.open if compress else open)(filepath,'rt'), dialect=dialect)
+    with WriteCSV(filepath, reader.fieldnames, compress=compress, dialect=dialect) as writer:
+        for row in callback(reader, *callback_args, **callback_vargs):
+            writer.writerow(row)

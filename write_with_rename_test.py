@@ -1,6 +1,14 @@
 #!/bin/python -ubb
 
-import write_with_rename, time, lzma
+import csv, write_with_rename, time, lzma, os
+
+for compress in [False,True]:
+    filename = 'write_with_rename-test-%d.tsv'%compress
+    (lzma.open if compress else open)(filename,'wt').write('a\tb\n1\t2\n')
+    write_with_rename.change_csv(filename, lambda rows:({'a':int(row['a'])+10,'b':int(row['b'])+10} for row in rows), compress=compress)
+    assert (_:=list(csv.DictReader((lzma.open if compress else open)(filename,'rt'),dialect=csv.excel_tab))) == [{'a':'11','b':'12'}], _
+    print('checked '+filename)
+    os.unlink(filename)
 
 for compress in [False,True]:
     for binary in [False,True]:
@@ -14,4 +22,6 @@ for compress in [False,True]:
                     f.write(msg)
             else:
                 write_with_rename.write(filename, msg, compress=compress)
-            print(filename,'success' if (lzma.open if compress else open)(filename,'r'+('b' if binary else 't')).read() == msg else 'error')
+            assert (lzma.open if compress else open)(filename,'r'+('b' if binary else 't')).read() == msg, filename
+            print('checked '+filename)
+            os.unlink(filename)
