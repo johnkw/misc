@@ -3,7 +3,11 @@
 import os, select, shlex, subprocess, sys, lzma
 
 def stream_proc(args, streams_to_pipe_inputs):
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=[i[1] for i in streams_to_pipe_inputs.values()])
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, pass_fds=[i['read_fd'] for i in streams_to_pipe_inputs.values()])
+
+    for fd in streams_to_pipe_inputs.keys():
+        os.set_blocking(fd, False)
+
     linebuf = b''
     while True:
         reads,writes,errors = select.select(
@@ -15,13 +19,16 @@ def stream_proc(args, streams_to_pipe_inputs):
             assert proc.poll()
             return
         for write in writes:
-            assert streams_to_pipe_inputs
-            data = streams_to_pipe_inputs[write][0].read(10000)
-            if not data:
-                os.close(write)
-                streams_to_pipe_inputs.pop(write)
-                continue
-            os.write(write, data)
+            if streams_to_pipe_inputs[write]['pending_write']:
+                data = streams_to_pipe_inputs[write]['pending_write']
+            else:
+                data = streams_to_pipe_inputs[write]['source_stream'].read(10000)
+                if not data:
+                    os.close(write)
+                    streams_to_pipe_inputs.pop(write)
+                    continue
+            len_written = os.write(write, data)
+            streams_to_pipe_inputs[write]['pending_write'] = data[len_written:]
 
         assert errors == []
         for read in reads:
@@ -46,8 +53,8 @@ def stream_proc(args, streams_to_pipe_inputs):
                         stream_proc(
                             ['diff']+sys.argv[1:-2]+['--label',file_names[2]+' --- piped through xz','--label',file_names[4]+' --- piped through xz','/proc/self/fd/%d'%file1[0], '/proc/self/fd/%d'%file2[0]],
                             {
-                                file1[1]: (lzma.open(file_names[2],'r'), file1[0]),
-                                file2[1]: (lzma.open(file_names[4],'r'), file2[0]),
+                                file1[1]: {'source_stream':lzma.open(file_names[2],'r'), 'read_fd':file1[0], 'pending_write':b''},
+                                file2[1]: {'source_stream':lzma.open(file_names[4],'r'), 'read_fd':file2[0], 'pending_write':b''},
                             }
                         )
                     else:
