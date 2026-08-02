@@ -35,10 +35,10 @@ class MutexFile():
 
     def wait_for_lock(self):
         had_to_wait = 0
-        while not self.attempt_lock(clog.info if had_to_wait > 10 else clog.debug):
+        while not self.attempt_lock(clog.info if had_to_wait > 20 else clog.debug):
             time.sleep(1)
             had_to_wait += 1
-        (clog.info if had_to_wait > 10 else clog.debug)('got lock for '+self.__lock_file_name)
+        (clog.info if had_to_wait > 20 else clog.debug)('got lock for '+self.__lock_file_name)
 
     def something_is_waiting(self):
         return os.path.getmtime(self.__lock_file_name) > self.__lock_time
