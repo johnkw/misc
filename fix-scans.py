@@ -30,4 +30,4 @@ subprocess.check_call(
     ['-append','+repage','-strip','-flatten','-resize','2000x','-type','optimize']+
     (['-colorspace','gray'] if cmdargs['color'] in ('gray','bw') else [])+
     (['-type','grayscale','-threshold','80%','-depth','1','-define','webp:lossless=true'] if cmdargs['color'] == 'bw' else ['-quality',str(cmdargs['quality']),'-brightness-contrast',cmdargs['brightness-contrast']])+
-    [datetime.datetime.fromtimestamp(scans[-1][0]).strftime('%Y-%m-%d_%H_%M_%S.'+cmdargs['type'])])
+    [datetime.datetime.fromtimestamp(scans[-1][0]).strftime('%Y-%m-%d_%H_%M_%S-')+str(cmdargs['quality'])+'.'+cmdargs['type']])
