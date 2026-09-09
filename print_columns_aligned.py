@@ -1,5 +1,5 @@
-#!/bin/python3 -ubb
-import itertools, sys, re, textwrap
+#!/bin/python -ubb
+import itertools, re, textwrap
 
 def plen(s):
     return len(re.sub('\033[\\[\\]]([0-9]{1,2}([;@][0-9]{0,2})*)*[mKP]?', '', s))
@@ -141,11 +141,11 @@ def get_table(headers, rows, reprint_header=False, table_attrs=''):
     return ret
 
 if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('DELIMETER')
-    parser.add_argument('ALIGN_TO_COUNT', type=int, default=0, nargs='?')
-    parser.add_argument('ALIGN', type=str, default='r', choices=('l','r'), nargs='?')
-    args = parser.parse_args()
-    lines = [i.split(args.DELIMETER) for i in sys.stdin.readlines()]
-    print_columns_aligned([{'n':i,'a':args.ALIGN} for i in lines[0]], lines[1:], align_to_count=args.ALIGN_TO_COUNT)
+    import cmdargs, sys
+    cmdargs.parse(
+        'DELIMETER',
+        ('ALIGN_TO_COUNT', {'type':int, 'default':0,   'nargs':'?'}),
+        ('ALIGN',          {'type':str, 'default':'r', 'choices':('l','r'), 'nargs':'?'}),
+    )
+    lines = [i.split(cmdargs['DELIMETER']) for i in sys.stdin.readlines()]
+    print_columns_aligned([{'n':i,'a':cmdargs['ALIGN']} for i in lines[0]], lines[1:], align_to_count=cmdargs['ALIGN_TO_COUNT'])
