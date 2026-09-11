@@ -1,9 +1,21 @@
-import clog, inspect
+import clog, inspect, select, sys
 
-def choice(prompt, allowed, default=None):
+def input_timeout(prompt, timeout):
+    print(prompt,end='')
+    read, _, _ = select.select([sys.stdin], [], [], timeout)
+    if read:
+        ret = sys.stdin.readline()
+        if ret == '':
+            print('EOF')
+            return None
+        return ret.removesuffix('\n')
+    else:
+        print('input timeout')
+        return None
+
+def choice(prompt, allowed, default=None, timeout=None):
     for i in range(10):
-        try: ret = input('\007'+prompt+' ('+', '.join(allowed)+'): ')
-        except EOFError: ret = None
+        ret = input_timeout('\007'+prompt+' ('+', '.join(allowed)+'): '+('(timeout '+str(timeout)+') ' if timeout else ''), timeout)
         if ret == None:
             if default != None:
                 assert default in allowed
