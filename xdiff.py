@@ -9,11 +9,12 @@ def stream_proc(args, streams_to_pipe_inputs):
         os.set_blocking(fd, False)
 
     linebuf = b''
-    while True:
+    read_filenos = [proc.stdout.fileno(),proc.stderr.fileno()]
+    while read_filenos:
         reads,writes,errors = select.select(
-            (proc.stdout.fileno(),proc.stderr.fileno()),
+            read_filenos,
             streams_to_pipe_inputs.keys(),
-            (proc.stdout,proc.stderr)
+            read_filenos
         )
         if not(reads or writes or errors):
             assert proc.poll()
@@ -32,10 +33,13 @@ def stream_proc(args, streams_to_pipe_inputs):
 
         assert errors == []
         for read in reads:
+            newbuf = os.read(read,1000)
+            if not len(newbuf):
+                read_filenos.remove(read)
+
             if read == proc.stderr.fileno():
-                sys.stderr.buffer.write(os.read(read,10000))
+                sys.stderr.buffer.write(newbuf)
             else:
-                newbuf = os.read(read,1000)
                 if len(newbuf) == 0 and proc.poll():
                     assert linebuf == b'', 'un-terminated data? '+repr(linebuf)
                     return
