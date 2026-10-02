@@ -3,8 +3,8 @@ import argparse, clog, sys, types
 class tmp(types.ModuleType):
     def __getitem__(self, name): return self.vars_args[name]
     def __contains__(self, name):return name in self.vars_args
-    def subparse(self, var, *options):
-        parser = argparse.ArgumentParser(formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=9999, max_help_position=9999))
+    def subparse(self, var, *options, description=None):
+        parser = argparse.ArgumentParser(description=description,formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=9999, max_help_position=9999))
 
         for arg in options:
             if isinstance(arg, tuple):
@@ -24,7 +24,7 @@ class tmp(types.ModuleType):
                 kwarg['dest'] = arg.lstrip(parser.prefix_chars) # stop argparse confusingly converting - to _
             parser.add_argument(arg, **kwarg)
         return vars(parser.parse_args(var))
-    def parse(self, *options):
+    def parse(self, *options, description=None):
         options = list(options)
         for arg in options:
             if isinstance(arg, str):
@@ -38,7 +38,7 @@ class tmp(types.ModuleType):
         options.append(('--quiet',{'action':'store_true'}))
         options.append(('--logstdout',{'choices':clog.logging.getLevelNamesMapping().keys(),'metavar':'level-name'}))
 
-        self.vars_args = self.subparse(None, *options)
+        self.vars_args = self.subparse(None, *options, description=description)
         if not self.vars_args['logstdout']:
             if self.vars_args['debug'] > 0:
                 self.vars_args['logstdout'] = 'NOTSET' if self.vars_args['debug'] > 1 else 'DEBUG'
