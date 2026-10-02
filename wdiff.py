@@ -202,6 +202,12 @@ def printdiffs(diffs):
 
 if __name__ == '__main__':
     def showdiffs(old, new):
+        # The "easy" mode can be dramatically faster when diffing a file with many lines, where a bit changed on each line.
+        if len(old) == len(new) and len(sys.argv) == 2 and sys.argv[1] == 'easy':
+            while old:
+                printdiffs(dodifflib(old.pop(0), new.pop(0)))
+            return
+
         if old or new:
             while len(old) > 2 and len(new) > 2:
                 searchlen = min(len(old), len(new))-1
@@ -239,7 +245,6 @@ if __name__ == '__main__':
                 alines, dlines = [], []
                 colored_print(line, 0)
 
-    # fix to always end wdiff output with a 0-color linefeed
     if alines != [] or dlines != []:
         if dlines:
             assert dlines[-1][-1:] == b'\n'
@@ -248,4 +253,4 @@ if __name__ == '__main__':
             assert alines[-1][-1:] == b'\n'
             alines[-1] = alines[-1][:-1]
         showdiffs(dlines, alines)
-        colored_print(b'\n', 0)
+        colored_print(b'\n', 0) # always end wdiff output with a 0-color linefeed

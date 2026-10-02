@@ -17,7 +17,7 @@ class WriteWithRename(object):
     def __enter__(self):
         if self.logging:
             self.logging('WriteWithRename writing '+('binary' if self.binary else 'text')+' '+self.filename)
-        self.tf = tempfile.NamedTemporaryFile(dir=os.path.dirname(self.filename), delete=False)
+        self.tf = tempfile.NamedTemporaryFile(dir=os.path.dirname(self.filename), delete=False, prefix='write_with_rename.')
         if self.compress:
             self.tf.file = lzma.LZMAFile(self.tf.file, 'a', format=lzma.FORMAT_XZ,preset=9|lzma.PRESET_EXTREME)
         if not self.binary:
