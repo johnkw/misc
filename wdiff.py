@@ -203,8 +203,8 @@ def printdiffs(diffs):
 if __name__ == '__main__':
     def showdiffs(old, new):
         # The "easy" mode can be dramatically faster when diffing a file with many lines, where a bit changed on each line.
-        if len(old) == len(new) and len(sys.argv) == 2 and sys.argv[1] == 'easy':
-            while old:
+        if len(sys.argv) == 2 and sys.argv[1] == 'easy':
+            while new and old:
                 printdiffs(dodifflib(old.pop(0), new.pop(0)))
             return
 
