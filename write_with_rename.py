@@ -21,7 +21,7 @@ class WriteWithRename(object):
         if self.compress:
             self.tf.file = lzma.LZMAFile(self.tf.file, 'a', format=lzma.FORMAT_XZ,preset=9|lzma.PRESET_EXTREME)
         if not self.binary:
-            self.tf.file = io.TextIOWrapper(self.tf.file, write_through=True)
+            self.tf.file = io.TextIOWrapper(self.tf.file)
         return self.tf.file
     def __exit__(self, _exc_type, _exc_value, _traceback):
         self.tf.file.close()
