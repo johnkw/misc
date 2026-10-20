@@ -28,7 +28,7 @@ class WriteWithRename(object):
         self.tf.file.close()
         self.tf.close()
         if _exc_type == None:
-            if self.no_touch_if_identical and open(self.tf.name).read() == open(self.filename).read():
+            if self.no_touch_if_identical and open(self.tf.name,'rb').read() == open(self.filename,'rb').read():
                 os.unlink(self.tf.name)
                 return
             os.rename(self.tf.name, self.filename)
