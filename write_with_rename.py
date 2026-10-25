@@ -28,9 +28,13 @@ class WriteWithRename(object):
         self.tf.file.close()
         self.tf.close()
         if _exc_type == None:
-            if self.no_touch_if_identical and open(self.tf.name,'rb').read() == open(self.filename,'rb').read():
-                os.unlink(self.tf.name)
-                return
+            if self.no_touch_if_identical:
+                try:
+                    if open(self.tf.name,'rb').read() == open(self.filename,'rb').read():
+                        os.unlink(self.tf.name)
+                        return
+                except FileNotFoundError:
+                    pass # If the file did not previously exist, ignore and continue.
             os.rename(self.tf.name, self.filename)
             final_time = time.time()
             os.utime(self.filename, times=(final_time, final_time))
@@ -51,8 +55,8 @@ class WriteCSV(WriteWithRename):
         csvwriter.writeheader()
         return csvwriter
 
-def write(filename, data, /, logging=True, compress=False):
-    with WriteWithRename(filename, binary=bool(isinstance(data,bytes)), logging=logging, compress=compress) as f:
+def write(filename, data, /, logging=True, compress=False, no_touch_if_identical=False):
+    with WriteWithRename(filename, binary=bool(isinstance(data,bytes)), logging=logging, compress=compress, no_touch_if_identical=no_touch_if_identical) as f:
         f.write(data)
 
 def change_csv(filepath, callback, /, compress=False, dialect=csv.excel_tab, callback_args=[], callback_vargs={}, no_touch_if_identical=False):
