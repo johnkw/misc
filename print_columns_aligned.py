@@ -89,6 +89,13 @@ def print_columns_aligned(headers, lines, reprint_header=False, dict_from_header
 def print_columns_aligned_auto_from_dict(lines, reprint_header=False, align_to_count=False, return_output=False):
     return print_columns_aligned(list(lines[0].keys()), lines, reprint_header, True, align_to_count, return_output)
 
+def print_columns_from_dict_with_specified_widths(headers, data):
+    ''' For large amounts of data with widths that can be specified in advance, this is much faster. '''
+    print(' '.join(kn.rjust(kw) for kn,kw in headers.items()))
+    for i in data:
+        print((' '.join(str(i.get(kn,'')).rjust(kw) for kn,kw in headers.items())).rstrip())
+    print(' '.join(kn.rjust(kw) for kn,kw in headers.items()))
+
 def get_table(headers, rows, reprint_header=False, table_attrs=''):
     from htmlstr import htmlstr
     data_headers = []
