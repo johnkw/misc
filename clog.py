@@ -1,4 +1,4 @@
-import logging, reprlib, sys, time
+import logging, sys, time
 
 def add_handler(level, handler, show_pid=False, show_thread=False):
     handler.setFormatter(logging.Formatter('%(asctime)s '+('%(process)d ' if show_pid else '')+('%(threadName)s ' if show_thread else '')+'%(message)s', '%Y-%m-%d %H:%M:%S'))
@@ -38,16 +38,3 @@ def watch(msg):
             import datetime
             msg = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S ')+msg
         print(msg,end='')
-
-_builtin_repr = repr
-def repr(input_obj):
-    class ReprGood(reprlib.Repr):
-        def __init__(self):
-            reprlib.Repr.__init__(self)
-            self.maxlist=99
-            self.maxdict=99
-            self.indent=1
-        def repr_list(self,obj,level):
-            return _builtin_repr(obj) if not any(isinstance(i,(list,dict,tuple)) for i in obj) else reprlib.Repr.repr_list(self,obj,level)
-    tmp = ReprGood()
-    return tmp.repr(input_obj)
